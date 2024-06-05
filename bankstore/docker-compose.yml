@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    ports:
+      - 5435:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=bankstoredb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bankstore_internal
+
+volumes:
+  postgres_data:
+
+networks:
+    bankstore_internal:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                -   subnet: 10.216.2.0/24
